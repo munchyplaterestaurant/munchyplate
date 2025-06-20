@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Munchy Plate Restaurant - Order Online</title>
+
+<!-- Google Fonts for Charm (for slogan) -->
+<link href="https://fonts.googleapis.com/css2?family=Charm&display=swap" rel="stylesheet" />
+
+<style>
+  /* Reset & base */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0; 
+    font-family: Arial, sans-serif;
+    background: url('https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=1470&q=80') no-repeat center center/cover;
+    color: white;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Dark overlay for readability */
+  body::before {
+    content: "";
+    position: fixed;
+    top:0; left:0; right:0; bottom:0;
+    background: rgba(0,0,0,0.75);
+    z-index: 0;
+  }
+
+  main, #receipt {
+    position: relative;
+    z-index: 1;
+    max-width: 720px;
+    margin: 40px auto 60px;
+    padding: 20px 30px 40px;
+    background: rgba(0,0,0,0.7);
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgb(255, 174, 0);
+  }
+
+  h1, h2 {
+    margin: 0;
+  }
+
+  /* Header with logo & name */
+  header {
+    text-align: center;
+    margin-bottom: 30px;
+    position: relative;
+    z-index: 1;
+  }
+  header img.logo {
+    height: 80px;
+    margin-bottom: 10px;
+    filter: drop-shadow(0 0 3px hsl(24, 100%, 50%));
+  }
+  header .logo-name {
+    font-family: 'Cooper Black', Arial, sans-serif;
+    font-weight: bold;
+    font-size: 2.6rem;
+    color: #FF6600; /* Orange */
+    text-shadow: 0 0 6px #FF6600;
+    letter-spacing: 1.2px;
+  }
+  header .slogan {
+    font-family: 'Charm', cursive;
+    font-size: 1.5rem;
+    color: white;
+    opacity: 0.85;
+    letter-spacing: 0.07em;
+    margin-top: 4px;
+  }
+
+  /* Form styles */
+  form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  label {
+    flex: 1 0 50%;
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+  }
+  input[type="number"], input[type="text"], input[type="tel"] {
+    flex: 1 0 48%;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: none;
+    font-size: 1rem;
+  }
+  input[readonly] {
+    background: #222;
+    color: #FF6600;
+    font-weight: bold;
+  }
+  input[type="text"]:focus, input[type="number"]:focus, input[type="tel"]:focus {
+    outline: 2px solid #FF6600;
+    background: #333;
+    color: white;
+  }
+
+  /* Section titles */
+  .section-title {
+    flex-basis: 100%;
+    font-size: 1.2rem;
+    margin: 16px 0 8px;
+    border-bottom: 2px solid #FF6600;
+    padding-bottom: 4px;
+  }
+
+  /* Subsection titles */
+  .subsection-title {
+    flex-basis: 100%;
+    margin-top: 12px;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #FF6600;
+    text-transform: uppercase;
+  }
+
+  /* Buttons */
+  button[type="submit"], #printBtn, #newOrderBtn {
+    background-color: #FF6600;
+    color: black;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.25s ease;
+    margin-top: 12px;
+  }
+  button[type="submit"]:hover,
+  #printBtn:hover,
+  #newOrderBtn:hover {
+    background-color: #e65500;
+  }
+  #printBtn, #newOrderBtn {
+    margin-right: 12px;
+  }
+
+  /* Receipt styles */
+  #receipt {
+    display: none;
+    white-space: pre-wrap;
+    font-family: 'Courier New', Courier, monospace;
+    background: #111;
+    color: white;
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 18px #FF6600;
+  }
+  #receipt hr {
+    border-color: #FF6600;
+  }
+  #receipt .logo {
+    display: block;
+    margin: 0 auto 12px;
+    max-height: 100px;
+    filter: drop-shadow(0 0 5px #FF6600);
+  }
+  #receipt .logo-name {
+    font-family: 'Cooper Black', Arial, sans-serif;
+    font-weight: bold;
+    font-size: 2rem;
+    color: #FF6600;
+    text-align: center;
+    text-shadow: 0 0 6px #FF6600;
+  }
+  #receipt .slogan {
+    font-family: 'Charm', cursive;
+    font-size: 1.3rem;
+    text-align: center;
+    color: white;
+    margin-bottom: 12px;
+    opacity: 0.9;
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 16px 12px;
+    background-color: #111;
+    color: white;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    font-size: 0.9rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Responsive tweaks */
+  @media (max-width: 600px) {
+    label, input[type="number"], input[type="text"], input[type="tel"] {
+      flex-basis: 100%;
+    }
+    main, #receipt {
+      margin: 20px 12px 40px;
+      padding: 15px 20px 30px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="images/logo.png.png" alt="Munchy Plate Logo" class="logo" />
+  <h1 class="logo-name">MUNCHY PLATE RESTAURANT</h1>
+  <h2 class="slogan">fresh n delicious</h2>
+</header>
+
+<main>
+  <form id="orderForm" novalidate>
+    <!-- Menu Items -->
+    <label class="section-title">Hot Beverages</label>
+
+    <label for="african_tea">AFRICAN TEA (Ksh 50):</label>
+    <input type="number" id="african_tea" name="african_tea" min="0" max="10" value="0" data-price="50" />
+
+    <label for="strong_tea">STRONG TEA (Ksh 50):</label>
+    <input type="number" id="strong_tea" name="strong_tea" min="0" max="10" value="0" data-price="50" />
+
+    <label for="special_tea">SPECIAL TEA (Ksh 80):</label>
+    <input type="number" id="special_tea" name="special_tea" min="0" max="10" value="0" data-price="80" />
+
+    <label for="lemon_tea">LEMON TEA (Ksh 100):</label>
+    <input type="number" id="lemon_tea" name="lemon_tea" min="0" max="10" value="0" data-price="100" />
+
+    <label class="subsection-title">Accompaniments</label>
+    <label for="two_fried_eggs">TWO FRIED EGGS (Ksh 80):</label>
+    <input type="number" id="two_fried_eggs" name="two_fried_eggs" min="0" max="10" value="0" data-price="80" />
+
+    <label for="scrambled_eggs">SCRAMBLED EGGS (Ksh 120):</label>
+    <input type="number" id="scrambled_eggs" name="scrambled_eggs" min="0" max="10" value="0" data-price="120" />
+
+    <label for="spanish_omelette">SPANISH OMELETTE (Ksh 100):</label>
+    <input type="number" id="spanish_omelette" name="spanish_omelette" min="0" max="10" value="0" data-price="100" />
+
+    <label for="rolex">ROLEX (Ksh 120):</label>
+    <input type="number" id="rolex" name="rolex" min="0" max="10" value="0" data-price="120" />
+
+    <label for="kebab">KEBAB (Ksh 70):</label>
+    <input type="number" id="kebab" name="kebab" min="0" max="10" value="0" data-price="70" />
+
+    <label for="samosa">SAMOSA (Ksh 50):</label>
+    <input type="number" id="samosa" name="samosa" min="0" max="10" value="0" data-price="50" />
+
+    <label for="mandazi">MANDASI (Ksh 50):</label>
+    <input type="number" id="mandazi" name="mandazi" min="0" max="10" value="0" data-price="50" />
+
+    <label class="section-title">Cold Drinks</label>
+
+    <label for="soda_300ml">SODA 300ML (Ksh 50):</label>
+    <input type="number" id="soda_300ml" name="soda_300ml" min="0" max="10" value="0" data-price="50" />
+
+    <label for="soda_500ml">SODA 500ML (Ksh 80):</label>
+    <input type="number" id="soda_500ml" name="soda_500ml" min="0" max="10" value="0" data-price="80" />
+
+    <label for="orange_fanta">ORANGE FANTA (Ksh 60):</label>
+    <input type="number" id="orange_fanta" name="orange_fanta" min="0" max="10" value="0" data-price="60" />
+
+    <!-- Customer Info -->
+    <label class="section-title">Customer Information</label>
+
+    <label for="customer_name">Full Name:</label>
+    <input type="text" id="customer_name" name="customer_name" required placeholder="Your full name" />
+
+    <label for="customer_phone">Phone Number:</label>
+    <input type="tel" id="customer_phone" name="customer_phone" required placeholder="+2547XXXXXXXX" pattern="^\+2547\d{8}$" />
+
+    <label for="customer_location">Delivery Location:</label>
+    <input type="text" id="customer_location" name="customer_location" required placeholder="Your delivery location" />
+
+    <!-- Payment Details -->
+    <label class="section-title">Payment Details</label>
+    <p style="flex-basis: 100%; margin:0 0 6px; font-weight:bold; color:#FF6600;">
+      Payment Method: MPESA<br />
+      Paybill Number: 247247<br />
+      Account Number: 873423
+    </p>
+
+    <label for="mpesa_transaction_id">MPESA Transaction ID:</label>
+    <input type="text" id="mpesa_transaction_id" name="mpesa_transaction_id" placeholder="Enter your MPESA Transaction ID" required pattern="[A-Z0-9]{10,13}" title="Enter valid MPESA transaction ID (e.g. AB12CD34EF)" />
+
+    <label for="order_total">Order Total (Ksh):</label>
+    <input type="text" id="order_total" name="order_total" readonly value="0" />
+
+    <button type="submit">Place Order</button>
+  </form>
+</main>
+
+<div id="receipt">
+  <img src="images/logo.png" alt="Munchy Plate Logo" class="logo" />
+  <h1 class="logo-name">MUNCHY PLATE RESTAURANT</h1>
+  <h2 class="slogan">fresh n delicious</h2>
+  <hr />
+  <pre id="receipt_content"></pre>
+  <hr />
+  <button id="printBtn">Print Receipt</button>
+  <button id="newOrderBtn">New Order</button>
+</div>
+
+<footer>
+  For more details and enquiries kindly contact +254714876114 / +254700488409
+</footer>
+
+<script>
+  const form = document.getElementById('orderForm');
+  const orderTotalInput = document.getElementById('order_total');
+  const receipt = document.getElementById('receipt');
+  const receiptContent = document.getElementById('receipt_content');
+  const printBtn = document.getElementById('printBtn');
+  const newOrderBtn = document.getElementById('newOrderBtn');
+
+  // Calculate total price whenever quantity inputs change
+  function calculateTotal() {
+    let total = 0;
+    const inputs = form.querySelectorAll('input[type="number"]');
+    inputs.forEach(input => {
+      const qty = parseInt(input.value) || 0;
+      const price = parseInt(input.getAttribute('data-price')) || 0;
+      total += qty * price;
+    });
+    orderTotalInput.value = total;
+  }
+
+  form.querySelectorAll('input[type="number"]').forEach(input => {
+    input.addEventListener('input', calculateTotal);
+  });
+
+  // Helper to build the order summary string for receipt and WhatsApp
+  function buildOrderSummary() {
+    let lines = [];
+    const inputs = form.querySelectorAll('input[type="number"]');
+    inputs.forEach(input => {
+      const qty = parseInt(input.value) || 0;
+      if (qty > 0) {
+        const label = form.querySelector('label[for="' + input.id + '"]').innerText;
+        lines.push(`${label} x ${qty} = Ksh ${qty * parseInt(input.getAttribute('data-price'))}`);
+      }
+    });
+    return lines.length > 0 ? lines.join('\n') : 'No items ordered.';
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    // Validate MPESA Transaction ID format
+    const mpesaID = form.mpesa_transaction_id.value.trim().toUpperCase();
+    if (!/^[A-Z0-9]{10,13}$/.test(mpesaID)) {
+      alert('Please enter a valid MPESA Transaction ID.');
+      return;
+    }
+
+    if (orderTotalInput.value === "0") {
+      alert('Please select at least one item to order.');
+      return;
+    }
+
+    // Prepare order data
+    const customerName = form.customer_name.value.trim();
+    const customerPhone = form.customer_phone.value.trim();
+    const customerLocation = form.customer_location.value.trim();
+    const orderTotal = orderTotalInput.value;
+    const orderSummary = buildOrderSummary();
+
+    // Compose WhatsApp message (URL encoded)
+    const whatsappNumber = '254714876114'; // Restaurant's WhatsApp number without '+' sign
+    let whatsappMessage = `New Order from Munchy Plate Restaurant:\n\n`;
+    whatsappMessage += `Customer Name: ${customerName}\n`;
+    whatsappMessage += `Phone: ${customerPhone}\n`;
+    whatsappMessage += `Delivery Location: ${customerLocation}\n\n`;
+    whatsappMessage += `Order Details:\n${orderSummary}\n\n`;
+    whatsappMessage += `Order Total: Ksh ${orderTotal}\n`;
+    whatsappMessage += `Payment Method: MPESA\n`;
+    whatsappMessage += `MPESA Transaction ID: ${mpesaID}\n\n`;
+    whatsappMessage += `*** Free deliveries within KMTC Headquarters and its environs ***\n\n`;
+    whatsappMessage += `Please process this order.`;
+
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+
+    // Show receipt on page
+    let receiptText = '';
+    receiptText += `Customer Name: ${customerName}\n`;
+    receiptText += `Phone: ${customerPhone}\n`;
+    receiptText += `Delivery Location: ${customerLocation}\n\n`;
+    receiptText += `Order Details:\n${orderSummary}\n\n`;
+    receiptText += `Order Total: Ksh ${orderTotal}\n`;
+    receiptText += `Payment Method: MPESA\n`;
+    receiptText += `MPESA Transaction ID: ${mpesaID}\n\n`;
+    receiptText += `*** Free deliveries within KMTC Headquarters and its environs ***\n\n`;
+    receiptText += `Thank you for ordering from Munchy Plate Restaurant!\n`;
+
+    receiptContent.textContent = receiptText;
+
+    receipt.style.display = 'block';
+    form.style.display = 'none';
+
+    // Open WhatsApp chat in new tab
+    window.open(whatsappUrl, '_blank');
+  });
+
+  printBtn.addEventListener('click', () => {
+    window.print();
+  });
+
+  newOrderBtn.addEventListener('click', () => {
+    receipt.style.display = 'none';
+    form.reset();
+    orderTotalInput.value = '0';
+    form.style.display = 'block';
+  });
+
+  // Initial total calculation
+  calculateTotal();
+</script>
+
+</body>
+</html>
